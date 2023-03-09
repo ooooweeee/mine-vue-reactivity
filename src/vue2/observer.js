@@ -1,5 +1,7 @@
 import Dep from './dep';
 
+const arrProxyProto = Object.create(Array.prototype);
+
 export default class Observer {
   constructor(data) {
     this.walk(data);
@@ -11,6 +13,15 @@ export default class Observer {
   }
   defineReactive(obj, key, value) {
     const dep = new Dep();
+    if (Object.prototype.toString.call(value) === '[object Array]') {
+      ['push', 'pop', 'shift', 'unshift'].forEach(method => {
+        arrProxyProto[method] = function () {
+          Array.prototype[method].call(this, ...arguments);
+          dep.notify();
+        };
+      });
+      value.__proto__ = arrProxyProto;
+    }
     // defineProperty 方法无法在 ES5 中 shim，所以不支持 IE8 及以下的浏览器
     Object.defineProperty(obj, key, {
       get() {

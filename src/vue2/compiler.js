@@ -23,11 +23,11 @@ export default class Compiler {
     if (!tmp) {
       return;
     }
-    textNode.textContent = tmp;
+    textNode.textContent = JSON.stringify(tmp);
     // 该值需要响应式渲染，需要为其添加观察者
     new Watcher(this.$vm, key, newValue => {
       // 值发生改变时，更新 DOM
-      textNode.textContent = newValue;
+      textNode.textContent = JSON.stringify(newValue);
     });
   }
 }
